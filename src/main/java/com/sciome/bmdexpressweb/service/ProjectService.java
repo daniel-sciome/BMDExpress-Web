@@ -1,7 +1,6 @@
 package com.sciome.bmdexpressweb.service;
 
 import com.sciome.bmdexpress2.mvp.model.BMDProject;
-import com.sciome.bmdexpress2.mvp.model.stat.BMDResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,9 +18,9 @@ import java.util.stream.Collectors;
  * Provides in-memory storage and deserialization of .bm2 project files
  */
 @Service
-public class ProjectManagementService {
+public class ProjectService {
 
-    private static final Logger log = LoggerFactory.getLogger(ProjectManagementService.class);
+    private static final Logger log = LoggerFactory.getLogger(ProjectService.class);
 
     // In-memory project store
     // Maps project ID (UUID) -> ProjectHolder (project + metadata)
@@ -85,37 +84,6 @@ public class ProjectManagementService {
             throw new IllegalArgumentException("Project not found: " + projectId);
         }
         return holder;
-    }
-
-    /**
-     * Find a BMDResult by name within a project
-     *
-     * @param projectId The project ID
-     * @param bmdResultName The BMDResult name
-     * @return The BMDResult
-     * @throws IllegalArgumentException if project or result not found
-     */
-    public BMDResult findBmdResult(String projectId, String bmdResultName) {
-        BMDProject project = getProject(projectId);
-
-        return project.getbMDResult().stream()
-                .filter(result -> result.getName().equalsIgnoreCase(bmdResultName))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "BMDResult not found: " + bmdResultName + " in project " + projectId));
-    }
-
-    /**
-     * Get list of all BMDResult names in a project
-     *
-     * @param projectId The project ID
-     * @return List of BMDResult names
-     */
-    public List<String> getBmdResultNames(String projectId) {
-        BMDProject project = getProject(projectId);
-        return project.getbMDResult().stream()
-                .map(BMDResult::getName)
-                .collect(Collectors.toList());
     }
 
     /**

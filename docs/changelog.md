@@ -9,14 +9,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**2025-10-15 17:45** - Implemented REST API for .bm2 project management
+- Created comprehensive REST API infrastructure following TDD methodology
+  - **ProjectController** - RESTful endpoints for project operations
+    - `POST /api/projects` - Upload .bm2 file (multipart/form-data)
+    - `GET /api/projects/{projectId}` - Get project metadata
+    - `GET /api/projects/{projectId}/full` - Get complete BMDProject object
+    - `GET /api/projects/{projectId}/bmd-results` - List BMD result names
+    - `GET /api/projects/{projectId}/category-results/{resultName}` - Get specific category result
+    - `GET /api/projects/available-files` - List .bm2 files in server directory
+    - `POST /api/projects/load-from-file` - Load .bm2 from server filesystem
+    - `DELETE /api/projects/{projectId}` - Delete project from memory
+  - **GlobalExceptionHandler** - Centralized exception handling with @ControllerAdvice
+    - Context-aware HTTP status codes (400 Bad Request, 404 Not Found, 500 Internal Server Error)
+    - Distinguishes "not found" vs "bad request" via message content analysis
+    - Handles IllegalArgumentException, RuntimeException, IOException, ClassNotFoundException
+    - Returns structured ErrorResponse JSON with status, error type, message, timestamp, and path
+  - **DTOs** - Data Transfer Objects for API responses
+    - `ProjectUploadResponse` - Project metadata with BMD/category result names
+    - `ErrorResponse` - Standardized error response format
+- Created specialized service layer with clear separation of concerns
+  - **ProjectService** (renamed from ProjectManagementService)
+    - Project lifecycle management (load, store, retrieve, delete)
+    - In-memory storage using ConcurrentHashMap
+    - Project metadata tracking (UUID, filename, timestamp)
+  - **BmdResultsService** - BMD analysis result queries
+    - Case-insensitive result name lookup
+    - Result name enumeration
+  - **CategoryResultsService** - Category analysis result queries
+    - Case-insensitive result name lookup
+    - Result name enumeration
+- Comprehensive test suite with 47 passing tests
+  - **ProjectControllerTest** (14 tests) - Controller integration tests with MockMvc
+  - **GlobalExceptionHandlerTest** (7 tests) - Exception handling verification
+  - **ProjectServiceTest** (14 tests) - Service layer unit tests
+  - **BmdResultsServiceTest** (6 tests) - BMD result service tests
+  - **CategoryResultsServiceTest** (6 tests) - Category result service tests
+- Security features
+  - Directory traversal prevention in file loading endpoints
+  - Filename validation (reject paths with `..`, `/`, `\`)
+  - File existence and readability checks
+
 **2025-10-15 16:00** - Implemented .bm2 file support (design deviation)
 - Added BMDExpress3 desktop application JAR as Maven dependency
   - Installed `bmdexpress3-3.0.0-SNAPSHOT.jar` to local Maven repository
   - Provides access to `BMDProject`, `BMDResult`, and `BMDExpressProperties` classes
-- Created `ProjectManagementService` for .bm2 file management
+- Created `ProjectService` for .bm2 file management (initially named ProjectManagementService)
   - Deserializes .bm2 files using Java `ObjectInputStream`
   - Stores projects in-memory using `ConcurrentHashMap<String, ProjectHolder>`
-  - Provides methods for project CRUD operations and BMDResult queries
   - Tracks project metadata (UUID, filename, upload timestamp)
 - Adapted existing prototype code from `/tmp/server` to project architecture
   - Updated package structure from `com.sciome.bmdexpress2.server` to `com.sciome.bmdexpressweb`
@@ -95,6 +135,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+**2025-10-15 17:45** - Service layer architectural refactoring
+- Renamed `ProjectManagementService` to `ProjectService` following Spring naming conventions
+  - "Service" is architectural designation, not operation count
+  - Aligns with Spring Boot best practices (singular, domain-based naming)
+- Split `AnalysisResultsService` into specialized services to prevent "god class" anti-pattern
+  - Created `BmdResultsService` for BMD-specific operations
+  - Created `CategoryResultsService` for category analysis operations
+  - Improves maintainability and follows Single Responsibility Principle
+  - Enables future expansion for additional analysis types (PrefilterResultsService, IviveResultsService, etc.)
+- Updated `ProjectController` to inject specialized services instead of umbrella service
+- All 47 tests passing after refactoring
+
 **2025-10-15 09:18** - Documentation serving approach
 - Switched from Spring MVC resource handlers to custom servlet filter
 - Removed problematic VaadinConfig and VaadinServletConfiguration files that caused server crashes
@@ -164,4 +216,4 @@ When making changes to this project, please update this changelog following thes
 
 ---
 
-*Last updated: 2025-10-15 16:00*
+*Last updated: 2025-10-15 17:45*
