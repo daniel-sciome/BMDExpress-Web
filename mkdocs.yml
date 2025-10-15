@@ -129,6 +129,8 @@ nav:
     - Testing: design/testing.md
     - Risk Mitigation: design/risk-mitigation.md
     - Glossary: design/glossary.md
+  - Appendices:
+    - "Appendix A: .bm2 File Implementation": appendices/bm2-implementation.md
 
 # Extra Configuration
 extra:

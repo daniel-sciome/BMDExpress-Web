@@ -126,3 +126,6 @@ env/
 *.crt
 *.jks
 *.p12
+
+# Data directory for .bm2 project files
+data/

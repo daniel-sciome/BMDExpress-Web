@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**2025-10-15 16:00** - Implemented .bm2 file support (design deviation)
+- Added BMDExpress3 desktop application JAR as Maven dependency
+  - Installed `bmdexpress3-3.0.0-SNAPSHOT.jar` to local Maven repository
+  - Provides access to `BMDProject`, `BMDResult`, and `BMDExpressProperties` classes
+- Created `ProjectManagementService` for .bm2 file management
+  - Deserializes .bm2 files using Java `ObjectInputStream`
+  - Stores projects in-memory using `ConcurrentHashMap<String, ProjectHolder>`
+  - Provides methods for project CRUD operations and BMDResult queries
+  - Tracks project metadata (UUID, filename, upload timestamp)
+- Adapted existing prototype code from `/tmp/server` to project architecture
+  - Updated package structure from `com.sciome.bmdexpress2.server` to `com.sciome.bmdexpressweb`
+  - Preserved functionality while integrating with Spring Boot configuration
+- Created `data/projects/` directory for .bm2 file storage
+- Added comprehensive documentation in Appendix A: .bm2 File Implementation
+  - Explains design deviation from database-first approach
+  - Documents BMDExpress JAR dependency integration
+  - Describes code adaptation strategy
+  - Outlines future database integration path
+- Updated MkDocs navigation to include Appendices section
+
 **2025-10-15 09:30** - Restarted server after DevTools instability
 - Clean server restart to resolve crash from rapid DevTools reloads
 - Verified MainView component is properly compiled and accessible
@@ -144,4 +164,4 @@ When making changes to this project, please update this changelog following thes
 
 ---
 
-*Last updated: 2025-10-15 09:30*
+*Last updated: 2025-10-15 16:00*
