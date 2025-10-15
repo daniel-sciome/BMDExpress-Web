@@ -1,0 +1,11 @@
+# requirements.txt
+
+# Core engine
+mkdocs
+
+# The most popular theme, provides look/feel and many features
+mkdocs-material
+
+# Example Plugins
+mkdocs-git-revision-date-localized-plugin  # Shows "Last updated" from Git
+mkdocs-mermaid2-plugin                     # Adds support for Mermaid.js diagrams

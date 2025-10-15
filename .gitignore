@@ -106,6 +106,20 @@ out/
 dist/
 build/
 
+# MkDocs
+site/
+.cache/
+
+# Python (for MkDocs)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+ENV/
+env/
+
 # Security
 *.pem
 *.key

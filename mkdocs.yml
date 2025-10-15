@@ -1,0 +1,147 @@
+# MkDocs Configuration for BMDExpress-Web
+
+# Site Information
+site_name: BMDExpress-Web Documentation
+site_description: Documentation for BMDExpress-Web - A Spring Boot/Vaadin application for dose-response analysis
+site_author: Sciome LLC, NIEHS
+site_url: https://sciome.github.io/BMDExpress-Web/
+
+# Repository
+repo_name: sciome/BMDExpress-Web
+repo_url: https://github.com/sciome/BMDExpress-Web
+edit_uri: edit/main/docs/
+
+# Copyright
+copyright: Copyright &copy; 2015-2025 National Institute of Environmental Health Sciences
+
+# Theme Configuration
+theme:
+  name: material
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+# Plugins
+plugins:
+  - search:
+      lang: en
+      separator: '[\s\-,:!=\[\]()"/]+|\.(?!\d)|&[lg]t;'
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - mermaid2
+
+# Extensions
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Navigation Structure
+nav:
+  - Home: index.md
+  - Design Documentation:
+    - Overview: design/overview.md
+    - Background: design/background.md
+    - Desktop Analysis: design/desktop-analysis.md
+    - Web Architecture: design/architecture.md
+    - Migration Strategy: design/migration-strategy.md
+    - Technology Stack: design/technology-stack.md
+    - Project Structure: design/project-structure.md
+    - Implementation Phases: design/implementation-phases.md
+    - Key Components: design/key-components.md
+    - Data Model: design/data-model.md
+    - API Design: design/api-design.md
+    - Security: design/security.md
+    - Deployment: design/deployment.md
+    - Testing: design/testing.md
+    - Risk Mitigation: design/risk-mitigation.md
+    - Glossary: design/glossary.md
+
+# Extra Configuration
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/sciome/BMDExpress-Web
+      name: GitHub Repository
+  version:
+    provider: mike
+    default: latest
+
+# Additional CSS/JS
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js

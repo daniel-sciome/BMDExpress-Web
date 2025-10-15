@@ -1,0 +1,25 @@
+/* Custom CSS for BMDExpress-Web Documentation */
+
+/* Add custom styles here */
+
+:root {
+  --md-primary-fg-color: #3f51b5;
+  --md-primary-fg-color--light: #5c6bc0;
+  --md-primary-fg-color--dark: #303f9f;
+}
+
+/* Code block improvements */
+.highlight {
+  border-radius: 0.2rem;
+}
+
+/* Table improvements */
+table {
+  display: table;
+  width: 100%;
+}
+
+/* Custom admonition styles */
+.admonition {
+  border-radius: 0.2rem;
+}
