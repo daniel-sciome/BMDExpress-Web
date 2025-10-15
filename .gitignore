@@ -1,0 +1,114 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.ctxt
+.mtj.tmp/
+hs_err_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Spring Boot
+spring-boot-*.jar
+*.pid
+
+# Vaadin
+node_modules/
+frontend/generated/
+frontend/index.html
+frontend/index.ts
+pnpm-lock.yaml
+package-lock.json
+webpack.generated.js
+tsconfig.json
+types.d.ts
+vite.config.ts
+vite.generated.ts
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+*.swp
+*.swo
+*~
+
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+local.properties
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Environment
+.env
+.env.local
+.env.*.local
+application-local.properties
+application-secret.properties
+
+# Docker
+docker-compose.override.yml
+
+# Test
+test-output/
+*.test
+
+# Database
+*.db
+*.sqlite
+*.h2.db
+
+# Temp files
+temp/
+tmp/
+*.tmp
+
+# Build artifacts
+out/
+dist/
+build/
+
+# Security
+*.pem
+*.key
+*.crt
+*.jks
+*.p12
