@@ -9,6 +9,86 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**2025-10-16 21:07** - Integrated MVP-based Vaadin UI from prototype
+
+Implemented complete MVP (Model-View-Presenter) architecture for the web UI, copying and adapting the starter code from `/tmp/ui` prototype. This establishes the foundation for systematically porting the JavaFX desktop UI to Vaadin.
+
+- **MVP Infrastructure** - Complete implementation of MVP pattern
+  - `BMDExpressEventBus` - Guava EventBus as Spring `@Component` singleton for decoupled communication
+  - `BMDExpressEventBase<T>` - Generic base class for all event types
+  - Event classes: `ShowCategoryAnalysisEvent`, `ProjectLoadedEvent`, `ShowBMDResultEvent`
+  - `PresenterBase<V>` - Abstract base class for all presenters, handles view reference and EventBus registration
+  - `ServicePresenterBase` - Extended base for presenters that need service access
+  - View interfaces: `IProjectNavigationView`, `IMainView`, `IBMDExpressDataView`
+
+- **Core Views and Presenters**
+  - **MainView** (495 lines) - Clean implementation without god class anti-pattern
+    - File menu: Open/Close/Save project, Export to JSON
+    - Analysis menu: ANOVA, Williams Trend, BMD Analysis, GO/Pathway Analysis (placeholder actions)
+    - Help menu: Tutorial, About, License
+    - Split layout: Project navigation tree (25%) + data view area (75%)
+    - Upload dialog with file validation (.bm2 only, 100MB max)
+    - Notification system (success/error/info)
+    - Status labels with auto-hide functionality
+  - **ProjectNavigationView** (271 lines) - TreeGrid-based project browser
+    - Hierarchical display of project datasets using TreeGrid
+    - Node types: Project root, Expression Data, BMD Results, Category Analysis
+    - Grayed-out styling for non-functional sections
+    - Category result selection handling
+    - Expands to show 21 BMD results and 42 category analyses from uploaded project
+  - **ProjectNavigationPresenter** - Mediates between view and EventBus
+    - Populates tree from ProjectUploadResponse
+    - Creates hierarchical structure matching desktop app
+    - Handles category selection events
+  - **CategoryAnalysisDataView** (185 lines) - Data grid and charts for category results
+    - Dynamic column generation from API response
+    - Data grid with sorting, resizing, pagination
+    - BMD statistics extraction (Mean, Median)
+    - Placeholder for ApexCharts integration (charts container ready)
+
+- **REST Client Service**
+  - **BmdExpressApiService** (196 lines) - Spring `@Service` for calling backend API
+    - RestTemplate with SSL trust configuration (self-signed certs supported)
+    - NoopHostnameVerifier to disable hostname verification
+    - Methods: uploadProject(), getFullProject(), getCategoryResult(), checkHealth()
+    - HttpComponents 5 for advanced SSL/TLS features
+
+- **Dependencies Added**
+  - Google Guava 33.0.0-jre (EventBus for MVP communication)
+  - Apache HttpComponents Client 5.3 (SSL/TLS support for API client)
+
+- **Frontend Resources**
+  - `frontend/styles/project-navigation.css` - Styling for tree navigation
+    - Grayed-out styling for disabled/non-functional tree nodes
+    - Compact tree spacing using Lumo design tokens
+
+**Architecture Highlights**:
+- Clean separation: Views contain only UI logic, Presenters handle business logic
+- EventBus enables decoupled communication between components
+- Spring dependency injection for all services and EventBus
+- Ready for systematic porting of remaining JavaFX views from BMDExpress-3
+
+**Integration Results**:
+- All 38 source files compile successfully
+- All 64 tests passing (58 unit + 6 integration)
+- Server starts cleanly on port 8080
+- Vaadin dev bundle builds successfully
+- MVP components initialize correctly: "MainView: MVP components initialized"
+- UI loads without errors - ready for interactive development
+
+**Files Copied and Adapted**:
+- 18 Java files from `/tmp/ui` prototype
+- Package names updated from `com.sciome.bmdexpress2.webui` to `com.sciome.bmdexpressweb`
+- Import paths corrected (`services` → `service`)
+- All code integrated into existing Spring Boot application structure
+
+**Next Steps**:
+- Implement remaining analysis dialogs (ANOVA, Williams Trend, BMD, GO, Pathway)
+- Add BMD result data view (currently only category analysis functional)
+- Integrate ApexCharts for BMD distribution visualizations
+- Port Expression Data view from desktop application
+- Add context menus for tree items (export, remove, rename)
+
 **2025-10-16 19:55** - Added stubbed category analysis functionality from prototype
 
 Implemented complete API surface for category analysis to mirror `/tmp/server` prototype functionality. All endpoints are properly stubbed with clear documentation referencing the prototype for future implementation.

@@ -1,0 +1,14 @@
+/**
+ * Styles for Project Navigation TreeGrid
+ */
+
+/* Grayed out items (non-functional sections) */
+.grayed-out {
+    color: var(--lumo-disabled-text-color);
+    opacity: 0.6;
+}
+
+/* Make tree more compact */
+vaadin-grid-tree-toggle {
+    --lumo-space-s: 0.5rem;
+}
