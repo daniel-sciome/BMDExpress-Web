@@ -1,12 +1,17 @@
 package com.sciome.bmdexpressweb.views.dataview;
 
+import com.vaadin.flow.component.charts.Chart;
+import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -169,34 +174,106 @@ public class CategoryAnalysisDataView extends VerticalLayout {
             }
         }
 
-        // Display summary statistics for now (ApexCharts integration in next step)
+        // Display histogram charts
         chartsContainer.removeAll();
-        Div statsDiv = new Div();
-        statsDiv.getStyle().set("padding", "8px");
 
+        // Create a horizontal layout for side-by-side charts
+        HorizontalLayout chartsLayout = new HorizontalLayout();
+        chartsLayout.setWidthFull();
+        chartsLayout.setSpacing(true);
+
+        // Create BMD Mean histogram if data is available
         if (!bmdMeanValues.isEmpty()) {
-            double mean = bmdMeanValues.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-            double min = bmdMeanValues.stream().mapToDouble(Double::doubleValue).min().orElse(0.0);
-            double max = bmdMeanValues.stream().mapToDouble(Double::doubleValue).max().orElse(0.0);
-
-            Div meanStats = new Div();
-            meanStats.setText(String.format("BMD Mean Statistics: Count=%d, Avg=%.3f, Min=%.3f, Max=%.3f",
-                    bmdMeanValues.size(), mean, min, max));
-            statsDiv.add(meanStats);
+            Chart meanChart = createHistogram("BMD Mean Distribution", bmdMeanValues);
+            meanChart.setWidth("50%");
+            chartsLayout.add(meanChart);
         }
 
+        // Create BMD Median histogram if data is available
         if (!bmdMedianValues.isEmpty()) {
-            double mean = bmdMedianValues.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-            double min = bmdMedianValues.stream().mapToDouble(Double::doubleValue).min().orElse(0.0);
-            double max = bmdMedianValues.stream().mapToDouble(Double::doubleValue).max().orElse(0.0);
-
-            Div medianStats = new Div();
-            medianStats.setText(String.format("BMD Median Statistics: Count=%d, Avg=%.3f, Min=%.3f, Max=%.3f",
-                    bmdMedianValues.size(), mean, min, max));
-            statsDiv.add(medianStats);
+            Chart medianChart = createHistogram("BMD Median Distribution", bmdMedianValues);
+            medianChart.setWidth("50%");
+            chartsLayout.add(medianChart);
         }
 
-        chartsContainer.add(statsDiv);
+        if (chartsLayout.getComponentCount() > 0) {
+            chartsContainer.add(chartsLayout);
+        } else {
+            chartsContainer.setText("No BMD data available for charting");
+        }
+    }
+
+    /**
+     * Create a histogram chart from BMD values
+     * @param title Chart title
+     * @param values BMD values to plot
+     * @return Configured Vaadin Chart
+     */
+    private Chart createHistogram(String title, List<Double> values) {
+        Chart chart = new Chart(ChartType.COLUMN);
+
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle(title);
+
+        // Calculate histogram bins (20 bins like the desktop app)
+        int numBins = 20;
+        double min = values.stream().mapToDouble(Double::doubleValue).min().orElse(0.0);
+        double max = values.stream().mapToDouble(Double::doubleValue).max().orElse(0.0);
+        double binWidth = (max - min) / numBins;
+
+        // Create bin counts
+        int[] binCounts = new int[numBins];
+        String[] binLabels = new String[numBins];
+
+        for (int i = 0; i < numBins; i++) {
+            double binStart = min + (i * binWidth);
+            double binEnd = binStart + binWidth;
+            binLabels[i] = String.format("%.2f", binStart);
+
+            // Count values in this bin
+            for (double value : values) {
+                if (i == numBins - 1) {
+                    // Last bin includes the max value
+                    if (value >= binStart && value <= binEnd) {
+                        binCounts[i]++;
+                    }
+                } else {
+                    if (value >= binStart && value < binEnd) {
+                        binCounts[i]++;
+                    }
+                }
+            }
+        }
+
+        // Configure X-axis (BMD values)
+        XAxis xAxis = conf.getxAxis();
+        xAxis.setCategories(binLabels);
+        xAxis.setTitle("BMD Value");
+
+        // Configure Y-axis (frequency)
+        YAxis yAxis = conf.getyAxis();
+        yAxis.setTitle("Frequency");
+        yAxis.setMin(0);
+
+        // Add data series
+        DataSeries series = new DataSeries("Frequency");
+        for (int count : binCounts) {
+            series.add(new DataSeriesItem("", count));
+        }
+        conf.addSeries(series);
+
+        // Configure appearance
+        conf.getLegend().setEnabled(false);
+        PlotOptionsColumn plotOptions = new PlotOptionsColumn();
+        plotOptions.setGroupPadding(0);
+        plotOptions.setPointPadding(0);
+        plotOptions.setBorderWidth(1);
+        conf.setPlotOptions(plotOptions);
+
+        // Set chart size
+        chart.setHeight("350px");
+
+        return chart;
     }
 
     /**

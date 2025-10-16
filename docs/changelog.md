@@ -9,6 +9,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**2025-10-16 23:00** - Implemented histogram charts for category analysis BMD distributions
+
+Added interactive histogram visualizations to display BMD value distributions in category analysis results using Vaadin Charts (based on Highcharts).
+
+- **Vaadin Charts Integration**:
+  - Added `vaadin-charts-flow` dependency for data visualization
+  - Vaadin Charts provides Java API for Highcharts library
+  - Fully integrated with Vaadin Flow components
+
+- **Histogram Implementation**:
+  - Created side-by-side histograms for BMD Mean and BMD Median distributions
+  - 20 bins per histogram (matching desktop application configuration)
+  - Auto-calculated bin widths based on data range (min to max)
+  - Frequency counts displayed on Y-axis, BMD values on X-axis
+  - Charts displayed in horizontal layout below category analysis data grid
+
+- **Chart Features**:
+  - Interactive tooltips showing exact frequencies
+  - Clean column chart style with minimal padding
+  - Responsive sizing (each chart takes 50% width)
+  - Chart height: 350px
+  - Legend disabled for cleaner appearance
+  - Border around bars for visual clarity
+
+- **Data Extraction**:
+  - Automatically detects "BMD Mean" and "BMD Median" columns
+  - Extracts numeric values from category analysis results
+  - Handles missing or incomplete data gracefully
+  - Displays message if no BMD data available
+
+**Files Modified**:
+- `pom.xml` - Added Vaadin Charts dependency
+- `src/main/java/com/sciome/bmdexpressweb/views/dataview/CategoryAnalysisDataView.java` (lines 3-10, 140-277)
+  - Added Vaadin Charts imports
+  - Replaced text statistics with actual histogram charts
+  - Created `createHistogram()` helper method for chart generation
+  - Implemented histogram binning algorithm
+
+**Visualization Comparison**:
+- Desktop app: JFreeChart with JavaFX integration
+- Web app: Highcharts via Vaadin Charts Flow wrapper
+- Both display identical histogram configurations (20 bins, same data)
+
+**Future Enhancements**:
+Additional chart types from the desktop app can be added:
+- Accumulation charts (BMD/BMDL/BMDU)
+- Scatter plots (BMD vs BMDL)
+- Bubble charts (BMD vs p-value)
+- Bar charts for individual categories
+- Violin plots for distribution visualization
+- Range plots showing BMDL/BMD/BMDU ranges
+
+**Testing**:
+- Compile: ✓ All 39 source files compiled successfully
+- Server: ✓ Started on port 8080
+- Ready for interactive testing in browser
+
 **2025-10-16 21:07** - Integrated MVP-based Vaadin UI from prototype
 
 Implemented complete MVP (Model-View-Presenter) architecture for the web UI, copying and adapting the starter code from `/tmp/ui` prototype. This establishes the foundation for systematically porting the JavaFX desktop UI to Vaadin.
@@ -425,4 +482,4 @@ When making changes to this project, please update this changelog following thes
 
 ---
 
-*Last updated: 2025-10-16 22:30*
+*Last updated: 2025-10-16 23:00*
