@@ -2,8 +2,6 @@ package com.sciome.bmdexpressweb.dto;
 
 import com.sciome.bmdexpress2.shared.CategoryAnalysisEnum;
 
-import java.util.Map;
-
 /**
  * DTO for category analysis request
  */
@@ -11,14 +9,14 @@ public class CategoryAnalysisRequest {
     private String projectId;
     private String bmdResultName;
     private CategoryAnalysisEnum analysisType;
-    private Map<String, Object> parameters;
+    private CategoryAnalysisParametersDto parameters;
 
     // Constructors
     public CategoryAnalysisRequest() {
     }
 
     public CategoryAnalysisRequest(String projectId, String bmdResultName,
-                                  CategoryAnalysisEnum analysisType, Map<String, Object> parameters) {
+                                  CategoryAnalysisEnum analysisType, CategoryAnalysisParametersDto parameters) {
         this.projectId = projectId;
         this.bmdResultName = bmdResultName;
         this.analysisType = analysisType;
@@ -50,11 +48,11 @@ public class CategoryAnalysisRequest {
         this.analysisType = analysisType;
     }
 
-    public Map<String, Object> getParameters() {
+    public CategoryAnalysisParametersDto getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<String, Object> parameters) {
+    public void setParameters(CategoryAnalysisParametersDto parameters) {
         this.parameters = parameters;
     }
 }

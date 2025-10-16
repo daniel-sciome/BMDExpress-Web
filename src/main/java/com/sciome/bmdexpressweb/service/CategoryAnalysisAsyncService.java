@@ -1,5 +1,6 @@
 package com.sciome.bmdexpressweb.service;
 
+import com.sciome.bmdexpressweb.dto.CategoryAnalysisParametersDto;
 import com.sciome.bmdexpress2.mvp.model.category.CategoryAnalysisResults;
 import com.sciome.bmdexpress2.mvp.model.stat.BMDResult;
 import com.sciome.bmdexpress2.shared.CategoryAnalysisEnum;
@@ -31,14 +32,14 @@ public class CategoryAnalysisAsyncService {
      *
      * @param bmdResult The BMDResult to analyze
      * @param analysisType Type of category analysis (GO, PATHWAY, DEFINED, GENE_LEVEL)
-     * @param parameters Analysis parameters
+     * @param parametersDto Analysis parameters
      * @return CompletableFuture with analysis ID
      */
     @Async
     public CompletableFuture<String> runCategoryAnalysisAsync(
             BMDResult bmdResult,
             CategoryAnalysisEnum analysisType,
-            Map<String, Object> parameters) {
+            CategoryAnalysisParametersDto parametersDto) {
 
         String analysisId = UUID.randomUUID().toString();
 
@@ -52,11 +53,19 @@ public class CategoryAnalysisAsyncService {
             logger.info("Starting category analysis: {} for BMDResult: {}", analysisType, bmdResult.getName());
 
             // TODO: Implement actual analysis
-            // For now, just store as completed
+            // The prototype (/tmp/server) has a full implementation that:
+            // 1. Converts CategoryAnalysisParametersDto to CategoryAnalysisParameters using convertToParameters()
+            // 2. Calls CategoryAnalysisService.categoryAnalysis() from desktop app core
+            // 3. Returns CategoryAnalysisResults
+            //
+            // Stub implementation for now - just marks as completed without real analysis
+            // See /tmp/server/service/CategoryAnalysisAsyncService.java lines 58-86 for full implementation
+
             job.setStatus("COMPLETED");
             job.setCompletedAt(LocalDateTime.now());
 
-            logger.info("Completed category analysis: {}", analysisId);
+            logger.info("Completed category analysis stub: {}", analysisId);
+            logger.warn("Category analysis execution is stubbed - no actual analysis performed");
 
             return CompletableFuture.completedFuture(analysisId);
 
@@ -78,6 +87,34 @@ public class CategoryAnalysisAsyncService {
             throw new IllegalArgumentException("Analysis not found: " + analysisId);
         }
         return result;
+    }
+
+    /**
+     * Convert DTO parameters to CategoryAnalysisParameters from desktop app
+     *
+     * STUB: This method signature is defined to match the prototype implementation.
+     * The full implementation would convert all DTO fields to CategoryAnalysisParameters
+     * for use with the desktop app's CategoryAnalysisService.
+     *
+     * See /tmp/server/service/CategoryAnalysisAsyncService.java lines 100-242 for full implementation
+     * that handles:
+     * - BMD filtering (p-value, BMD/BMDL ratios, r-squared cutoffs)
+     * - Gene set size filters (min/max genes)
+     * - Fold change filters
+     * - Prefilter settings
+     * - GO category selection
+     * - Pathway database selection
+     * - Defined category file parameters
+     *
+     * @param dto The DTO containing analysis parameters from REST API
+     * @param analysisType The type of category analysis
+     * @return CategoryAnalysisParameters for desktop app (not implemented in stub)
+     */
+    private Object convertToParameters(CategoryAnalysisParametersDto dto, CategoryAnalysisEnum analysisType) {
+        // STUB: Return null for now
+        // Full implementation would return CategoryAnalysisParameters instance
+        logger.warn("convertToParameters is stubbed - parameter conversion not implemented");
+        return null;
     }
 
     /**

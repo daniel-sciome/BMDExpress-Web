@@ -5,11 +5,13 @@ import com.sciome.bmdexpressweb.dto.CategoryAnalysisResponse;
 import com.sciome.bmdexpressweb.service.BmdResultsService;
 import com.sciome.bmdexpressweb.service.CategoryAnalysisAsyncService;
 import com.sciome.bmdexpressweb.service.ProjectService;
+import com.sciome.bmdexpress2.mvp.model.category.CategoryAnalysisResults;
 import com.sciome.bmdexpress2.mvp.model.stat.BMDResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -118,6 +120,90 @@ public class CategoryAnalysisController {
 
                 return ResponseEntity.ok(response);
             }
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Export category analysis results as JSON
+     *
+     * GET /api/category-analysis/{analysisId}/export?format=json
+     *
+     * STUB: Returns results in JSON format. In a full implementation,
+     * this would format the CategoryAnalysisResults for download.
+     *
+     * @param analysisId The analysis ID
+     * @return Category analysis results as JSON
+     */
+    @GetMapping(value = "/{analysisId}/export", params = "format=json", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CategoryAnalysisResults> exportCategoryAnalysisJson(
+            @PathVariable String analysisId) {
+
+        try {
+            CategoryAnalysisAsyncService.AnalysisJobResult job =
+                    analysisService.getAnalysisResult(analysisId);
+
+            if (!"COMPLETED".equals(job.getStatus())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+
+            // STUB: In a full implementation, this would return the actual results
+            // See /tmp/server/controller/CategoryAnalysisController.java lines 135-154
+            logger.warn("Export JSON is stubbed - no actual results to export");
+
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=category_analysis_" + analysisId + ".json")
+                    .body(job.getResults());
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Export category analysis results as TSV
+     *
+     * GET /api/category-analysis/{analysisId}/export?format=tsv
+     *
+     * STUB: Would generate TSV format output from CategoryAnalysisResults.
+     * In a full implementation, this would:
+     * 1. Get the column headers from results.getColumnHeader()
+     * 2. Get all rows from results.getCategoryAnalysisResults()
+     * 3. Format as tab-separated values
+     *
+     * @param analysisId The analysis ID
+     * @param format The format parameter (should be "tsv")
+     * @return Category analysis results as TSV
+     */
+    @GetMapping(value = "/{analysisId}/export", params = "format=tsv", produces = "text/tab-separated-values")
+    public ResponseEntity<String> exportCategoryAnalysisTsv(
+            @PathVariable String analysisId,
+            @RequestParam(defaultValue = "tsv") String format) {
+
+        try {
+            CategoryAnalysisAsyncService.AnalysisJobResult job =
+                    analysisService.getAnalysisResult(analysisId);
+
+            if (!"COMPLETED".equals(job.getStatus())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+
+            CategoryAnalysisResults results = job.getResults();
+
+            // STUB: Generate placeholder TSV
+            // See /tmp/server/controller/CategoryAnalysisController.java lines 164-201 for full implementation
+            StringBuilder tsv = new StringBuilder();
+            tsv.append("# Category analysis results export is stubbed\n");
+            tsv.append("# No actual results available\n");
+            tsv.append("ID\tName\tDescription\n");
+
+            logger.warn("Export TSV is stubbed - returning placeholder data");
+
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=category_analysis_" + analysisId + ".tsv")
+                    .body(tsv.toString());
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

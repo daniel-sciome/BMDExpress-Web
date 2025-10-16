@@ -1,6 +1,8 @@
 package com.sciome.bmdexpressweb.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sciome.bmdexpressweb.dto.CategoryAnalysisParametersDto;
+import com.sciome.bmdexpressweb.dto.CategoryAnalysisRequest;
 import com.sciome.bmdexpressweb.service.BmdResultsService;
 import com.sciome.bmdexpressweb.service.CategoryAnalysisAsyncService;
 import com.sciome.bmdexpressweb.service.ProjectService;
@@ -15,8 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static org.hamcrest.Matchers.*;
@@ -74,11 +74,12 @@ class CategoryAnalysisControllerTest {
                 any()))
                 .thenReturn(CompletableFuture.completedFuture(testAnalysisId));
 
-        Map<String, Object> request = new HashMap<>();
-        request.put("projectId", testProjectId);
-        request.put("bmdResultName", "BMD Analysis 1");
-        request.put("analysisType", "GO");
-        request.put("parameters", new HashMap<>());
+        CategoryAnalysisParametersDto parameters = new CategoryAnalysisParametersDto();
+        CategoryAnalysisRequest request = new CategoryAnalysisRequest(
+                testProjectId,
+                "BMD Analysis 1",
+                CategoryAnalysisEnum.GO,
+                parameters);
 
         // Act & Assert
         mockMvc.perform(post("/api/category-analysis")
@@ -103,11 +104,12 @@ class CategoryAnalysisControllerTest {
         // Arrange
         when(projectService.projectExists("invalid-id")).thenReturn(false);
 
-        Map<String, Object> request = new HashMap<>();
-        request.put("projectId", "invalid-id");
-        request.put("bmdResultName", "BMD Analysis 1");
-        request.put("analysisType", "GO");
-        request.put("parameters", new HashMap<>());
+        CategoryAnalysisParametersDto parameters = new CategoryAnalysisParametersDto();
+        CategoryAnalysisRequest request = new CategoryAnalysisRequest(
+                "invalid-id",
+                "BMD Analysis 1",
+                CategoryAnalysisEnum.GO,
+                parameters);
 
         // Act & Assert
         mockMvc.perform(post("/api/category-analysis")
@@ -127,11 +129,12 @@ class CategoryAnalysisControllerTest {
         when(bmdResultsService.findBmdResult(testProjectId, "NonExistent"))
                 .thenThrow(new IllegalArgumentException("BMDResult not found: NonExistent"));
 
-        Map<String, Object> request = new HashMap<>();
-        request.put("projectId", testProjectId);
-        request.put("bmdResultName", "NonExistent");
-        request.put("analysisType", "GO");
-        request.put("parameters", new HashMap<>());
+        CategoryAnalysisParametersDto parameters = new CategoryAnalysisParametersDto();
+        CategoryAnalysisRequest request = new CategoryAnalysisRequest(
+                testProjectId,
+                "NonExistent",
+                CategoryAnalysisEnum.GO,
+                parameters);
 
         // Act & Assert
         mockMvc.perform(post("/api/category-analysis")

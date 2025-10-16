@@ -9,6 +9,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**2025-10-16 19:55** - Added stubbed category analysis functionality from prototype
+
+Implemented complete API surface for category analysis to mirror `/tmp/server` prototype functionality. All endpoints are properly stubbed with clear documentation referencing the prototype for future implementation.
+
+- **CategoryAnalysisParametersDto**: Comprehensive DTO with all analysis parameters
+  - BMD filtering parameters (p-value, BMD/BMDL ratios, r-squared cutoffs)
+  - Gene set size filters (min/max genes in set)
+  - Fold change and prefilter settings
+  - GO-specific parameters (category selection)
+  - Pathway-specific parameters (database selection)
+  - Defined category file parameters (probe/category file paths)
+  - Total of 20+ configurable parameters matching desktop app
+
+- **Export Endpoints** (STUBBED):
+  - `GET /api/category-analysis/{analysisId}/export?format=json` - Export as JSON
+  - `GET /api/category-analysis/{analysisId}/export?format=tsv` - Export as TSV
+  - Endpoints return placeholder data with clear stub warnings
+  - See `/tmp/server/controller/CategoryAnalysisController.java` lines 135-201 for full implementation
+
+- **CategoryAnalysisAsyncService** (STUBBED):
+  - Added comprehensive documentation of what needs to be implemented
+  - Stub method `convertToParameters()` documents 140 lines of parameter conversion logic
+  - References prototype implementation at `/tmp/server/service/CategoryAnalysisAsyncService.java:100-242`
+  - Logs warnings when stubbed methods are called
+
+- **Updated CategoryAnalysisRequest**: Changed from generic `Map<String, Object>` to typed `CategoryAnalysisParametersDto`
+- **Updated CategoryAnalysisControllerTest**: All 7 tests updated to use new DTO structure
+
+**Stub Status Documentation**:
+- All stubs clearly marked with "STUB:" comments
+- Each stub references corresponding prototype implementation location
+- Warns via logging when stubbed functionality is executed
+- Infrastructure ready for implementation - only business logic needs completion
+
+**Test Suite**: All 64 tests passing (58 unit + 6 integration)
+
 **2025-10-16 18:55** - Completed REST API with symmetric endpoints and comprehensive testing
 
 Implemented missing REST API endpoints to provide complete, symmetric access to BMD and category analysis results:
