@@ -1,5 +1,6 @@
 package com.sciome.bmdexpressweb.controller;
 
+import com.sciome.bmdexpressweb.dto.CategoryAnalysisTableView;
 import com.sciome.bmdexpressweb.dto.ErrorResponse;
 import com.sciome.bmdexpressweb.dto.ProjectUploadResponse;
 import com.sciome.bmdexpressweb.service.BmdResultsService;
@@ -243,10 +244,30 @@ public class ProjectController {
             }
 
             // Ensure row data and column headers are generated for JSON serialization
-            categoryResult.getColumnHeader(); // This populates the transient columnHeader field
+            List<String> columnHeader = categoryResult.getColumnHeader(); // This populates the transient columnHeader field
             categoryResult.generateRowData(); // This populates the row data
 
-            return ResponseEntity.ok(categoryResult);
+            logger.debug("Column header size: {}", columnHeader != null ? columnHeader.size() : "null");
+            logger.debug("Column header: {}", columnHeader);
+            logger.debug("Category results size: {}", categoryResult.getCategoryAnalsyisResults() != null ? categoryResult.getCategoryAnalsyisResults().size() : "null");
+
+            // Convert to table view with explicit columnHeader field
+            List<Map<String, Object>> rowData = new java.util.ArrayList<>();
+            if (categoryResult.getCategoryAnalsyisResults() != null) {
+                for (var result : categoryResult.getCategoryAnalsyisResults()) {
+                    Map<String, Object> rowMap = new java.util.HashMap<>();
+                    rowMap.put("row", result.getRow()); // CategoryAnalysisResult has getRow() method
+                    rowData.add(rowMap);
+                }
+            }
+
+            CategoryAnalysisTableView tableView = new CategoryAnalysisTableView(
+                categoryResult.getName(),
+                columnHeader,
+                rowData
+            );
+
+            return ResponseEntity.ok(tableView);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

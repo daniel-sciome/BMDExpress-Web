@@ -54,12 +54,19 @@ public class CategoryAnalysisDataView extends VerticalLayout {
      * Load category analysis data from the backend API response
      */
     public void loadCategoryData(Map<String, Object> categoryResult) {
+        System.out.println("=== CategoryAnalysisDataView.loadCategoryData() CALLED ===");
+
         if (categoryResult == null) {
+            System.out.println("ERROR: categoryResult is NULL");
             return;
         }
 
+        System.out.println("DEBUG: categoryResult keys: " + categoryResult.keySet());
+        System.out.println("DEBUG: categoryResult size: " + categoryResult.size());
+
         // Set title
         String name = (String) categoryResult.get("name");
+        System.out.println("DEBUG: Category name: " + name);
         if (name != null) {
             titleLabel.setText("Category Analysis: " + name);
         }
@@ -67,23 +74,37 @@ public class CategoryAnalysisDataView extends VerticalLayout {
         // Get column headers
         @SuppressWarnings("unchecked")
         List<String> columnHeaders = (List<String>) categoryResult.get("columnHeader");
+        System.out.println("DEBUG: columnHeaders: " + columnHeaders);
 
         // Get the results list
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> results = (List<Map<String, Object>>)
                 categoryResult.get("categoryAnalsyisResults"); // Note: typo in field name from backend
+        System.out.println("DEBUG: results is null? " + (results == null));
+        if (results != null) {
+            System.out.println("DEBUG: results size: " + results.size());
+            if (!results.isEmpty()) {
+                System.out.println("DEBUG: First result keys: " + results.get(0).keySet());
+            }
+        }
 
         if (columnHeaders == null || results == null) {
+            System.out.println("ERROR: columnHeaders or results is NULL - RETURNING");
+            System.out.println("  columnHeaders is null? " + (columnHeaders == null));
+            System.out.println("  results is null? " + (results == null));
             return;
         }
 
         // Clear existing columns
         dataGrid.removeAllColumns();
+        System.out.println("DEBUG: Cleared existing columns");
 
         // Add columns dynamically based on column headers
+        System.out.println("DEBUG: Adding " + columnHeaders.size() + " columns");
         for (int i = 0; i < columnHeaders.size(); i++) {
             final int colIndex = i;
             String header = columnHeaders.get(i);
+            System.out.println("DEBUG: Adding column " + i + ": " + header);
 
             dataGrid.addColumn(rowData -> {
                 @SuppressWarnings("unchecked")
@@ -98,9 +119,14 @@ public class CategoryAnalysisDataView extends VerticalLayout {
               .setSortable(true)
               .setAutoWidth(true);
         }
+        System.out.println("DEBUG: Finished adding columns");
 
         // Set data provider
+        System.out.println("DEBUG: Setting data provider with " + results.size() + " items");
         dataGrid.setDataProvider(new ListDataProvider<>(results));
+        System.out.println("DEBUG: Data provider set successfully");
+
+        System.out.println("=== CategoryAnalysisDataView.loadCategoryData() COMPLETE ===");
 
         // TODO: Extract BMD data and create charts
         extractAndDisplayCharts(results, columnHeaders);

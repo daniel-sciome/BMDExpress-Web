@@ -327,6 +327,41 @@ POST   /api/projects/load-from-file                        - Load .bm2 from serv
 
 ### Fixed
 
+**2025-10-16 22:30** - Category analysis table rendering bug
+
+Fixed critical bug preventing category analysis results from displaying in the data grid. When users selected a category analysis item from the navigation tree, the category name displayed correctly but the data table remained empty.
+
+**Root Cause**: The REST API endpoint `/api/projects/{projectId}/category-results/{resultName}` was returning the raw domain object (`CategoryAnalysisResults`). The `columnHeader` field in this object is marked as `transient`, so Jackson wasn't serializing it to JSON. The UI code expected this field to be present for dynamic column generation.
+
+**Solution Implemented**:
+- Created `CategoryAnalysisTableView.java` DTO (Data Transfer Object) with explicit fields:
+  - `name` - Category analysis result name
+  - `columnHeader` - List of column header strings (explicitly serialized)
+  - `categoryAnalsyisResults` - List of result data with proper structure
+- Modified `ProjectController.getCategoryResult()` (lines 227-275) to transform domain objects:
+  - Calls `categoryResult.getColumnHeader()` to compute column headers
+  - Calls `categoryResult.generateRowData()` to populate row data
+  - Wraps each result's row data in a Map with "row" key
+  - Returns `CategoryAnalysisTableView` DTO instead of raw domain object
+- Added debug logging to `CategoryAnalysisDataView.loadCategoryData()` for troubleshooting
+
+**Technical Details**:
+- Jackson JSON serialization skips transient fields by default
+- DTO pattern provides clean separation between domain models and API contracts
+- UI now receives properly structured JSON with all required fields
+- Dynamic column generation works as designed
+
+**Verification**:
+- Category analysis table now renders correctly with all columns and data
+- User confirmed: "table renders"
+- Grid displays dynamic columns based on columnHeader array
+- Row data properly extracted from Map structure with "row" keys
+
+**Files Modified**:
+- `src/main/java/com/sciome/bmdexpressweb/dto/CategoryAnalysisTableView.java` (NEW)
+- `src/main/java/com/sciome/bmdexpressweb/controller/ProjectController.java` (lines 227-275)
+- `src/main/java/com/sciome/bmdexpressweb/views/dataview/CategoryAnalysisDataView.java` (added debug logging)
+
 **2025-10-15 09:30** - Server stability
 - Resolved server crash (exit code 144) caused by rapid DevTools restarts
 
@@ -390,4 +425,4 @@ When making changes to this project, please update this changelog following thes
 
 ---
 
-*Last updated: 2025-10-15 17:45*
+*Last updated: 2025-10-16 22:30*
