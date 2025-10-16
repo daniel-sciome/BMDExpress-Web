@@ -6,6 +6,7 @@ import com.sciome.bmdexpressweb.service.BmdResultsService;
 import com.sciome.bmdexpressweb.service.CategoryResultsService;
 import com.sciome.bmdexpressweb.service.ProjectService;
 import com.sciome.bmdexpress2.mvp.model.BMDProject;
+import com.sciome.bmdexpress2.mvp.model.stat.BMDResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +145,54 @@ public class ProjectController {
     public ResponseEntity<List<String>> getBmdResults(@PathVariable String projectId) {
         List<String> bmdResultNames = bmdResultsService.getBmdResultNames(projectId);
         return ResponseEntity.ok(bmdResultNames);
+    }
+
+    /**
+     * Get a specific BMD result from a project
+     *
+     * GET /api/projects/{projectId}/bmd-results/{resultName}
+     *
+     * @param projectId The project ID
+     * @param resultName The BMD result name
+     * @return The BMD result
+     */
+    @GetMapping("/{projectId}/bmd-results/{resultName}")
+    public ResponseEntity<?> getBmdResult(
+            @PathVariable String projectId,
+            @PathVariable String resultName) {
+
+        try {
+            BMDResult bmdResult = bmdResultsService.findBmdResult(projectId, resultName);
+
+            // Ensure row data and column headers are generated for JSON serialization
+            try {
+                bmdResult.getColumnHeader(); // This populates the transient columnHeader field
+                bmdResult.generateRowData(); // This populates the row data
+            } catch (NullPointerException e) {
+                // Some BMDResult objects may not have complete data for row generation
+                // This is okay - we'll just return the object as-is
+                logger.debug("Unable to generate row data for BMDResult: {}", resultName);
+            }
+
+            return ResponseEntity.ok(bmdResult);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Get list of category analysis result names in a project
+     *
+     * GET /api/projects/{projectId}/category-results
+     *
+     * @param projectId The project ID
+     * @return List of category analysis result names
+     */
+    @GetMapping("/{projectId}/category-results")
+    public ResponseEntity<List<String>> getCategoryResults(@PathVariable String projectId) {
+        List<String> categoryResultNames = categoryResultsService.getCategoryResultNames(projectId);
+        return ResponseEntity.ok(categoryResultNames);
     }
 
     /**

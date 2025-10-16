@@ -183,6 +183,59 @@ class ProjectControllerTest {
     }
 
     @Test
+    void testGetBmdResult_Success() throws Exception {
+        // Arrange
+        BMDResult mockBmdResult = new BMDResult();
+        mockBmdResult.setName("BMD Analysis 1");
+        when(bmdResultsService.findBmdResult(testProjectId, "BMD Analysis 1")).thenReturn(mockBmdResult);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/projects/{projectId}/bmd-results/{resultName}", testProjectId, "BMD Analysis 1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("BMD Analysis 1"));
+
+        verify(bmdResultsService, times(1)).findBmdResult(testProjectId, "BMD Analysis 1");
+    }
+
+    @Test
+    void testGetBmdResult_NotFound() throws Exception {
+        // Arrange
+        when(bmdResultsService.findBmdResult(anyString(), anyString()))
+                .thenThrow(new IllegalArgumentException("BMDResult not found"));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/projects/{projectId}/bmd-results/{resultName}", "test-id", "NonExistent"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetCategoryResults_Success() throws Exception {
+        // Arrange
+        List<String> resultNames = List.of("GO Analysis 1", "Pathway Analysis 1");
+        when(categoryResultsService.getCategoryResultNames(testProjectId)).thenReturn(resultNames);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/projects/{projectId}/category-results", testProjectId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0]").value("GO Analysis 1"))
+                .andExpect(jsonPath("$[1]").value("Pathway Analysis 1"));
+
+        verify(categoryResultsService, times(1)).getCategoryResultNames(testProjectId);
+    }
+
+    @Test
+    void testGetCategoryResults_NotFound() throws Exception {
+        // Arrange
+        when(categoryResultsService.getCategoryResultNames(anyString()))
+                .thenThrow(new IllegalArgumentException("Project not found"));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/projects/{projectId}/category-results", "non-existent-id"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testGetFullProject_Success() throws Exception {
         // Arrange
         when(projectService.getProjectHolder(testProjectId)).thenReturn(mockHolder);

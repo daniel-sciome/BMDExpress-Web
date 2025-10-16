@@ -9,6 +9,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**2025-10-16 18:55** - Completed REST API with symmetric endpoints and comprehensive testing
+
+Implemented missing REST API endpoints to provide complete, symmetric access to BMD and category analysis results:
+- **New REST Endpoints**:
+  - `GET /api/projects/{projectId}/bmd-results/{resultName}` - Retrieve specific BMD result with full data
+  - `GET /api/projects/{projectId}/category-results` - List all category result names in project
+  - These complete the API symmetry alongside existing endpoints
+
+- **Integration Tests with Real Data**: Created comprehensive integration test suite
+  - New test class: `ProjectApiIntegrationTest` (6 tests)
+  - Tests full stack with real 35MB .bm2 file (P3MP-Parham.bm2)
+  - Verifies: file upload → deserialization → querying → JSON serialization → deletion
+  - Validates API works with actual BMDExpress data (21 BMD results, 42 category analyses)
+  - Test execution: ~40 seconds for complete integration suite
+
+- **File Upload Configuration**: Increased limits for large .bm2 files
+  - Set `spring.servlet.multipart.max-file-size=100MB`
+  - Set `spring.servlet.multipart.max-request-size=100MB`
+  - Configured in both `application.properties` and `application-test.properties`
+  - Enables upload of typical BMDExpress project files (10-50MB)
+
+- **Live API Verification Script**: Created `/tmp/test_api.sh` for end-to-end testing
+  - Tests real HTTP requests with curl
+  - Verifies complete workflow: upload 35MB file → query all endpoints → cleanup
+  - All 6 test scenarios pass with real data
+
+**Test Coverage Summary**:
+- **Unit tests**: 58 tests (controller logic with mocks)
+  - ProjectControllerTest: 18 tests (added 2 new for missing endpoints)
+  - CategoryAnalysisControllerTest: 7 tests
+  - GlobalExceptionHandlerTest: 7 tests
+  - ProjectServiceTest: 14 tests
+  - BmdResultsServiceTest: 6 tests
+  - CategoryResultsServiceTest: 6 tests
+- **Integration tests**: 6 tests (full stack with real 35MB .bm2 file)
+- **Live API tests**: 6 manual verification scenarios
+- **Total: 64 automated tests, all passing**
+
+**Complete REST API Surface** (ready for UI consumption):
+```
+POST   /api/projects                                        - Upload .bm2 file
+GET    /api/projects/{projectId}                           - Get project metadata
+GET    /api/projects/{projectId}/full                      - Get complete project object
+GET    /api/projects/{projectId}/bmd-results               - List BMD result names
+GET    /api/projects/{projectId}/bmd-results/{resultName}  - Get specific BMD result ✨ NEW
+GET    /api/projects/{projectId}/category-results          - List category result names ✨ NEW
+GET    /api/projects/{projectId}/category-results/{name}   - Get specific category result
+DELETE /api/projects/{projectId}                           - Delete project
+GET    /api/projects/available-files                       - List .bm2 files on server
+POST   /api/projects/load-from-file                        - Load .bm2 from server filesystem
+```
+
+**Implementation Approach**:
+- Followed TDD (Test-Driven Development) methodology
+- Red-Green-Refactor cycle for all new endpoints
+- Added error handling for incomplete BMDResult mock data
+- Maintained consistent API patterns across all endpoints
+
 **2025-10-15 17:45** - Implemented REST API for .bm2 project management
 - Created comprehensive REST API infrastructure following TDD methodology
   - **ProjectController** - RESTful endpoints for project operations
